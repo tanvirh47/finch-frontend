@@ -1,82 +1,32 @@
-name: Workflows File For CI/CD
+name :Workflow file for CI/CD
+
 
 on:
   push:
     branches:
-      - main
+      -main
   pull_request:
     branches:
-      - main
+      -main
 
 jobs:
-  testing:
-    runs-on: ubuntu-latest
+    deplyment:
+     runs-on: self-hosted
 
-    steps:
-      - name: Record Start Time
-        run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
-      - name: Checkout code
+     steps:
+       -name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Dependencies
-        run: pip install psutil
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '22'
-
-      - name: Install Application Level Dependencies
-        run: yarn install
-
-      - name: Run Your Test or App
+       -name: Install  Application level dependencies
         run: |
-          echo "Running main job..."
-          sleep 10  # Simulate CI job
-
-      - name: Record End Time and Duration
+          yarn install
+        
+        -name: Delete if process exists
         run: |
-          END_TIME=$(date +%s)
-          echo "END_TIME=$END_TIME" >> $GITHUB_ENV
-          echo "DURATION=$((END_TIME - START_TIME))" >> $GITHUB_ENV
+        pm2 delete node-js || true
 
-      - name: Run Carbon Estimator
+        -name start the application
         run: |
-          echo "Duration = $DURATION seconds"
-          python ci_carbon_estimator.py --duration $DURATION
-
-  builds:
-    needs: testing
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Record Start Time
-        run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
-
-      - name: Install Dependencies
-        run: pip install psutil
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '22'
-
-      - name: Install Application Level Dependencies
-        run: yarn install
-
-      - name: Build Application
-        run: yarn run build
-
-      - name: Record End Time and Duration
-        run: |
-          END_TIME=$(date +%s)
-          echo "END_TIME=$END_TIME" >> $GITHUB_ENV
-          echo "DURATION=$((END_TIME - START_TIME))" >> $GITHUB_ENV
-
-      - name: Run Carbon Estimator
-        run: |
-          echo "Duration = $DURATION seconds"
-          python ci_carbon_estimator.py --duration $DURATION
+          pm2 start "yarn serve" --name="node-js"
+         
+          
