@@ -17,17 +17,18 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install application dependencies
-        shell: bash
+        
         run: |
           yarn install
 
       - name: Delete PM2 process if exists
-        shell: bash
+        
         run: |
           pm2 delete node-js || true
 
       - name: Start the application
-        shell: bash
+        
         run: |
           pm2 start "yarn serve" --name "node-js"
-          pm2 save
+          
+ 
