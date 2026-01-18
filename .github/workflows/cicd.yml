@@ -31,6 +31,7 @@ jobs:
            yarn run test    
 
    builds:
+    needs: testing
     runs-on: ubuntu-latest
 
     steps:
@@ -50,6 +51,7 @@ jobs:
            yarn run build  
 
       deploy:
+    needs: builds
     runs-on: self-hosted
 
     steps:
@@ -65,4 +67,3 @@ jobs:
         run: |
            pm2 delete "node-app" || true
            pm2 start "yarn run start" --name "node-app"
-              
