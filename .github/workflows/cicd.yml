@@ -1,49 +1,17 @@
-name: Workflow file for CI/CD
+- name: Load Node & tools
+  shell: bash
+  run: |
+    export NVM_DIR="$HOME/.nvm"
+    . "$NVM_DIR/nvm.sh"
+    nvm use 20
+    node -v
+    yarn -v
+    pm2 -v
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  deployment:
-    runs-on: self-hosted
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Load Node 20 via NVM
-        shell: bash
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          . "$NVM_DIR/nvm.sh"
-          nvm use 20
-          node -v
-          yarn -v
-          pm2 -v
-
-      - name: Install dependencies
-        shell: bash
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          . "$NVM_DIR/nvm.sh"
-          nvm use 20
-          yarn install
-
-      - name: Delete PM2 process if exists
-        shell: bash
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          . "$NVM_DIR/nvm.sh"
-          nvm use 20
-          pm2 delete node-js || true
-
-      - name: Start application
-        shell: bash
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          . "$NVM_DIR/nvm.sh"
-          nvm use 20
-          pm2 start "yarn serve" --name node-js
+- name: Install dependencies
+  shell: bash
+  run: |
+    export NVM_DIR="$HOME/.nvm"
+    . "$NVM_DIR/nvm.sh"
+    nvm use 20
+    yarn install
